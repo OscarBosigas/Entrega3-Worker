@@ -1,0 +1,40 @@
+version: "3.8"
+services: 
+  db: 
+    container_name: entrega1-db
+    environment: 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: a123
+      POSTGRES_DB: entrega1-db
+    image: "postgres:latest"
+    networks:
+      - web_net
+    ports: 
+      - "5432:5432"
+    volumes: 
+      - ${PWD}/postgres-data:/var/lib/postgresql/data
+  back:
+    build: .
+    container_name: back
+    networks:
+      - web_net
+    ports:
+     - "5000:5000"
+    depends_on: 
+      - db
+    volumes:
+      - ${PWD}/files:/files
+  redis:
+    image: "bitnami/redis:latest"
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+networks:
+    web_net:
+        driver: bridge
+
+volumes: 
+  pg-data: 
+    driver: local
